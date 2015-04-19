@@ -1,0 +1,34 @@
+---
+- hosts: all
+  remote_user: vagrant  
+  sudo: true
+
+  tasks:
+
+    - apt: update_cache=yes
+
+    - apt: name="openjdk-7-jdk" state="present"
+
+    # - file: state="directory" path="/opt/nutch"
+    # - get_url: url="http://apache.mirror.serversaustralia.com.au/nutch/2.3/apache-nutch-2.3-src.tar.gz" dest="/opt/nutch/apache-nutch-2.3-src.tar.gz"
+    # - unarchive: src="/opt/nutch/apache-nutch-2.3-src.tar.gz" dest="/opt/nutch/" copy="no"
+    # vi $NUTCH_ROOT/ivy/ivy.xml
+    # vi $NUTCH_ROOT/conf/gora.properties
+    - apt: name="git" state="present"
+    - git: repo="https://github.com/talatuyarer/nutch.git" dest="/opt/nutch/nutch_talatuyarer"
+
+    - apt: name="ant" state="present"
+
+    - command: ant clean
+      args:
+        chdir: "/opt/nutch/nutch_talatuyarer"
+
+    - command: ant runtime
+      args:
+        chdir: "/opt/nutch/nutch_talatuyarer"
+
+    - copy: src="nutch-site.xml" dest="/opt/nutch/nutch_talatuyarer/runtime/local/conf/nutch-site.xml"
+
+    - command: "ln -sf /etc/hbase/conf/hbase-site.xml /opt/nutch/nutch_talatuyarer/runtime/local/conf/hbase-site.xml"
+
+    # sudo /opt/nutch/nutch_talatuyarer/runtime/local/bin/nutch inject /opt/nutch/seeds

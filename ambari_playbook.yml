@@ -1,0 +1,29 @@
+---
+- hosts: all
+  remote_user: vagrant  
+  sudo: true
+
+  tasks:
+
+    # wget http://public-repo-1.hortonworks.com/ambari/ubuntu12/1.x/updates/1.7.0/ambari.list
+    - get_url: url="http://public-repo-1.hortonworks.com/ambari/ubuntu12/1.x/updates/1.7.0/ambari.list" dest="/etc/apt/sources.list.d/ambari.list"
+
+    # apt-key adv --recv-keys --keyserver keyserver.ubuntu.com B9733A7A07513CAD
+    - apt_key: keyserver=keyserver.ubuntu.com id=B9733A7A07513CAD
+
+    # apt-get update
+    - apt: update_cache=yes
+
+    # apt-get install ntp
+    - apt: name="ntp" state="present"
+
+    # apt-get install ambari-server
+    - apt: name="ambari-server" state="present"
+
+    # ambari-server setup
+    - command: "ambari-server setup --silent"
+
+    # ambari-server start
+    - command: "ambari-server start"
+
+    # http://192.168.0.200:8080/
