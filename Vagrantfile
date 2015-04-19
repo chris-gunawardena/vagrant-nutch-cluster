@@ -36,6 +36,10 @@ Vagrant.configure(2) do |config|
 				end
 			end
 
+			#update packages and install ntp
+			node.vm.provision "shell", inline: " apt-get update -q "
+			node.vm.provision "shell", inline: " apt-get install -q -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" ntp "
+
 			#Only install ambari & nutch in node0
 			if i == 0
 				node.vm.provision :ansible do |ansible|
@@ -50,7 +54,7 @@ Vagrant.configure(2) do |config|
 				end
 			end
 
-		end 
+		end
 	end
 end
 
